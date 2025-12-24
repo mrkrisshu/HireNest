@@ -403,7 +403,7 @@ export default function CandidateDashboard() {
     }
 
     return (
-        <div className="flex h-screen bg-gray-50 dark:bg-neutral-900 overflow-hidden">
+        <div className="flex flex-col md:flex-row h-screen bg-gray-50 dark:bg-neutral-900 overflow-hidden">
             <Sidebar open={sidebarOpen} setOpen={setSidebarOpen}>
                 <SidebarBody className="justify-between gap-10 border-r border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900">
                     <div className="flex flex-col flex-1 overflow-y-auto overflow-x-hidden">

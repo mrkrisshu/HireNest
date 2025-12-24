@@ -379,7 +379,7 @@ export default function RecruiterDashboard() {
                                                 <SelectTrigger>
                                                     <SelectValue placeholder="Select type" />
                                                 </SelectTrigger>
-                                                <SelectContent>
+                                                <SelectContent className="z-[200]">
                                                     <SelectItem value="Full-time">Full-time</SelectItem>
                                                     <SelectItem value="Part-time">Part-time</SelectItem>
                                                     <SelectItem value="Contract">Contract</SelectItem>

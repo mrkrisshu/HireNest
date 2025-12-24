@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
         if (Array.isArray(candidateProfiles) && candidateProfiles.length > 0) {
             resume_url = candidateProfiles[0]?.resume_url
         } else if (candidateProfiles && typeof candidateProfiles === 'object') {
-            resume_url = (candidateProfiles as { resume_url: string | null }).resume_url
+            resume_url = (candidateProfiles as any).resume_url
         }
 
         console.log("Apply API - Resume URL:", resume_url)

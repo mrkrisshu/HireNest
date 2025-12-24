@@ -188,8 +188,8 @@ function LandingHeader() {
                     setMobileMenuOpen(false)
                   }}
                   className={`px-4 py-3 rounded-xl text-base font-medium transition-colors ${activeTab === link.label
-                      ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
-                      : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/5'
+                    ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
+                    : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/5'
                     }`}
                 >
                   {link.label}
@@ -228,31 +228,14 @@ export default function LandingPage() {
       {/* Hero Section with Canvas */}
       <section id="home" className="relative min-h-screen">
         <div className="animate-fadeIn mt-20 flex flex-col items-center justify-center px-4 text-center md:mt-20 relative z-10">
-          {/* Badge */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="z-10 mb-6 mt-10 sm:justify-center md:mb-4 md:mt-20"
-          >
-            <div className="relative flex items-center whitespace-nowrap rounded-full border border-emerald-500/30 bg-emerald-500/10 px-4 py-2 text-sm leading-6 text-emerald-600 dark:text-emerald-300">
-              <Sparkles className="h-4 w-4 mr-2" /> AI-Powered Career Matching
-              <Link
-                href="/jobs"
-                className="hover:text-emerald-500 dark:hover:text-emerald-400 ml-2 flex items-center font-semibold"
-              >
-                Explore{" "}
-                <ChevronRight className="h-4 w-4 ml-1" />
-              </Link>
-            </div>
-          </motion.div>
+
 
           {/* Main Hero Box */}
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.3, duration: 0.6 }}
-            className="mb-10 mt-4 md:mt-6"
+            className="mb-10 mt-16 md:mt-24"
           >
             <div className="px-2">
               <div className="border-emerald-500/20 relative mx-auto h-full max-w-7xl border p-6 [mask-image:radial-gradient(800rem_96rem_at_center,white,transparent)] md:px-12 md:py-20 rounded-3xl bg-white/50 dark:bg-white/5">
@@ -443,7 +426,7 @@ export default function LandingPage() {
               </p>
               <div className="flex gap-8">
                 <div>
-                  <p className="text-3xl font-bold bg-gradient-to-r from-emerald-500 to-cyan-500 bg-clip-text text-transparent">2024</p>
+                  <p className="text-3xl font-bold bg-gradient-to-r from-emerald-500 to-cyan-500 bg-clip-text text-transparent">2025</p>
                   <p className="text-gray-500 text-sm">Founded</p>
                 </div>
                 <div>
@@ -542,15 +525,7 @@ export default function LandingPage() {
                     <Briefcase className="ml-2 w-5 h-5" />
                   </Button>
                 </Link>
-                <Link href="/jobs">
-                  <Button
-                    size="lg"
-                    variant="outline"
-                    className="h-14 px-10 text-base rounded-full border-gray-300 dark:border-white/30 text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-white/10"
-                  >
-                    Explore Jobs
-                  </Button>
-                </Link>
+
               </div>
             </div>
           </motion.div>
@@ -568,7 +543,7 @@ export default function LandingPage() {
           </div>
 
           <p className="text-gray-500 text-sm">
-            © 2024 HireNest. Built for the future of work.
+            © 2025 HireNest. Built for the future of work.
           </p>
 
           <div className="flex items-center gap-6">

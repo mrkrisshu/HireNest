@@ -72,6 +72,7 @@ function AnimatedNumber({ value, suffix = "" }: { value: string; suffix?: string
 // Landing header - supports light/dark theme with tubelight navigation
 function LandingHeader() {
   const [activeTab, setActiveTab] = useState('Home')
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   const navLinks = [
     { href: '/', label: 'Home' },
@@ -88,7 +89,7 @@ function LandingHeader() {
       transition={{ duration: 0.6 }}
       className="fixed top-0 left-0 right-0 z-50 px-4 py-4"
     >
-      <div className="max-w-7xl mx-auto flex items-center justify-between bg-white/80 dark:bg-white/5 backdrop-blur-xl rounded-2xl border border-gray-200 dark:border-white/10 px-6 py-3 shadow-lg dark:shadow-none">
+      <div className="max-w-7xl mx-auto flex items-center justify-between bg-white/80 dark:bg-white/5 backdrop-blur-xl rounded-2xl border border-gray-200 dark:border-white/10 px-6 py-3 shadow-lg dark:shadow-none relative z-50">
         <Link href="/" className="flex items-center gap-2" onClick={() => setActiveTab('Home')}>
           <div className="p-2 bg-gradient-to-br from-emerald-500 to-cyan-500 rounded-lg">
             <Briefcase className="w-5 h-5 text-white" />
@@ -96,7 +97,7 @@ function LandingHeader() {
           <span className="text-gray-900 dark:text-white font-bold text-xl">HireNest</span>
         </Link>
 
-        {/* Tubelight Navigation */}
+        {/* Tubelight Navigation - Desktop */}
         <nav className="hidden md:flex items-center">
           <div className="flex items-center gap-1 bg-muted/50 border border-border/50 backdrop-blur-sm py-1 px-1 rounded-full">
             {navLinks.map((link) => {
@@ -137,7 +138,8 @@ function LandingHeader() {
           </div>
         </nav>
 
-        <div className="flex items-center gap-3">
+        {/* Desktop Buttons */}
+        <div className="hidden md:flex items-center gap-3">
           <ThemeToggle />
           <Link href="/login">
             <Button variant="ghost" className="text-gray-600 dark:text-white/80 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/10">
@@ -150,7 +152,66 @@ function LandingHeader() {
             </Button>
           </Link>
         </div>
+
+        {/* Mobile Menu Button - Mobile Only */}
+        <div className="flex md:hidden items-center gap-3">
+          <ThemeToggle />
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/10 rounded-lg"
+          >
+            {mobileMenuOpen ? (
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18" /><path d="m6 6 18 12" /></svg>
+            ) : (
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="4" x2="20" y1="12" y2="12" /><line x1="4" x2="20" y1="6" y2="6" /><line x1="4" x2="20" y1="18" y2="18" /></svg>
+            )}
+          </button>
+        </div>
       </div>
+
+      {/* Mobile Menu Overlay */}
+      {mobileMenuOpen && (
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -20 }}
+          className="absolute top-full left-0 right-0 p-4 z-40 md:hidden"
+        >
+          <div className="bg-white/90 dark:bg-[#0a0a0b]/90 backdrop-blur-xl rounded-2xl border border-gray-200 dark:border-white/10 p-4 shadow-xl flex flex-col gap-4">
+            <nav className="flex flex-col gap-2">
+              {navLinks.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  onClick={() => {
+                    setActiveTab(link.label)
+                    setMobileMenuOpen(false)
+                  }}
+                  className={`px-4 py-3 rounded-xl text-base font-medium transition-colors ${activeTab === link.label
+                      ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
+                      : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/5'
+                    }`}
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </nav>
+            <div className="h-px bg-gray-200 dark:bg-white/10" />
+            <div className="flex flex-col gap-3">
+              <Link href="/login" onClick={() => setMobileMenuOpen(false)}>
+                <Button variant="ghost" className="w-full text-gray-600 dark:text-white/80 hover:bg-gray-100 dark:hover:bg-white/10 justify-start h-12 text-base">
+                  Log in
+                </Button>
+              </Link>
+              <Link href="/register" onClick={() => setMobileMenuOpen(false)}>
+                <Button className="w-full bg-gradient-to-r from-emerald-500 to-cyan-500 text-white border-0 h-12 text-base font-medium">
+                  Get Started
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </motion.div>
+      )}
     </motion.header>
   )
 }

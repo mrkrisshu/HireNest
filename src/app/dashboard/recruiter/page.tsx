@@ -63,6 +63,7 @@ import {
     SelectValue,
 } from "@/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { createBrowserClient } from "@/lib/supabase-browser"
 
 interface UserProfile {
     id: string
@@ -182,6 +183,46 @@ export default function RecruiterDashboard() {
     React.useEffect(() => {
         fetchData()
     }, [fetchData])
+
+    // Real-time subscription for applications
+    React.useEffect(() => {
+        const supabase = createBrowserClient()
+
+        // Subscribe to new applications
+        const appsChannel = supabase
+            .channel('applications-changes')
+            .on(
+                'postgres_changes',
+                { event: 'INSERT', schema: 'public', table: 'applications' },
+                async () => {
+                    // Refetch applications when a new application is received
+                    const res = await fetch("/api/recruiter/applications")
+                    if (res.ok) {
+                        const data = await res.json()
+                        setApplications(data.applications)
+                        toast.info("New application received!", { duration: 3000 })
+                    }
+                }
+            )
+            .on(
+                'postgres_changes',
+                { event: 'UPDATE', schema: 'public', table: 'applications' },
+                async () => {
+                    // Refetch applications when status is updated
+                    const res = await fetch("/api/recruiter/applications")
+                    if (res.ok) {
+                        const data = await res.json()
+                        setApplications(data.applications)
+                    }
+                }
+            )
+            .subscribe()
+
+        // Cleanup subscription on unmount
+        return () => {
+            supabase.removeChannel(appsChannel)
+        }
+    }, [])
 
     const handleCreateJob = async () => {
         setIsCreating(true)

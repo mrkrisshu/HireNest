@@ -40,6 +40,7 @@ import { cn } from "@/lib/utils"
 import { ProfileEditDialog } from "@/components/profile-edit-dialog"
 import { JobsTable } from "@/components/jobs-table"
 import { ApplicationsTable } from "@/components/applications-table"
+import { createBrowserClient } from "@/lib/supabase-browser"
 import {
     Dialog,
     DialogContent,
@@ -180,6 +181,46 @@ export default function CandidateDashboard() {
         }
 
         fetchData()
+    }, [])
+
+    // Real-time subscription for jobs
+    useEffect(() => {
+        const supabase = createBrowserClient()
+
+        // Subscribe to new jobs
+        const jobsChannel = supabase
+            .channel('jobs-changes')
+            .on(
+                'postgres_changes',
+                { event: 'INSERT', schema: 'public', table: 'jobs' },
+                async () => {
+                    // Refetch jobs when a new job is posted
+                    const res = await fetch("/api/jobs/list")
+                    if (res.ok) {
+                        const data = await res.json()
+                        setJobs(data.jobs || [])
+                        toast.info("New job posted!", { duration: 3000 })
+                    }
+                }
+            )
+            .on(
+                'postgres_changes',
+                { event: 'UPDATE', schema: 'public', table: 'jobs' },
+                async () => {
+                    // Refetch jobs when a job is updated
+                    const res = await fetch("/api/jobs/list")
+                    if (res.ok) {
+                        const data = await res.json()
+                        setJobs(data.jobs || [])
+                    }
+                }
+            )
+            .subscribe()
+
+        // Cleanup subscription on unmount
+        return () => {
+            supabase.removeChannel(jobsChannel)
+        }
     }, [])
 
     const getNotificationMessage = (status: string, jobTitle: string, company: string) => {

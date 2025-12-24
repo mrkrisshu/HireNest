@@ -193,7 +193,7 @@ export function Navbar() {
                                 </DropdownMenuItem>
                                 {user.role === 'CANDIDATE' && (
                                     <DropdownMenuItem asChild>
-                                        <Link href="/dashboard/candidate/applications" className="cursor-pointer">
+                                        <Link href="/dashboard/candidate" className="cursor-pointer">
                                             <FileText className="mr-2 h-4 w-4" />
                                             My Applications
                                         </Link>
@@ -202,13 +202,13 @@ export function Navbar() {
                                 {user.role === 'RECRUITER' && (
                                     <>
                                         <DropdownMenuItem asChild>
-                                            <Link href="/dashboard/recruiter/post-job" className="cursor-pointer">
+                                            <Link href="/dashboard/recruiter" className="cursor-pointer">
                                                 <Building2 className="mr-2 h-4 w-4" />
                                                 Post a Job
                                             </Link>
                                         </DropdownMenuItem>
                                         <DropdownMenuItem asChild>
-                                            <Link href="/dashboard/recruiter/applications" className="cursor-pointer">
+                                            <Link href="/dashboard/recruiter" className="cursor-pointer">
                                                 <Users className="mr-2 h-4 w-4" />
                                                 View Applications
                                             </Link>

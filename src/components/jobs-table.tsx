@@ -31,11 +31,10 @@ interface JobsTableProps {
 
 export function JobsTable({
     title = "Browse Jobs",
-    jobs: initialJobs,
+    jobs,
     onApply,
     className = ""
 }: JobsTableProps) {
-    const [jobs] = useState<Job[]>(initialJobs);
     const [selectedJob, setSelectedJob] = useState<Job | null>(null);
     const [coverLetter, setCoverLetter] = useState("");
     const [isApplying, setIsApplying] = useState(false);

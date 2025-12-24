@@ -578,12 +578,12 @@ export default function RecruiterDashboard() {
 
                         <TabsContent value="applications" className="space-y-4">
                             <div className="flex items-center gap-4 mb-4">
-                                <Select value={selectedJob} onValueChange={setSelectedJob}>
+                                <Select value={selectedJob || "all"} onValueChange={(v) => setSelectedJob(v === "all" ? "" : v)}>
                                     <SelectTrigger className="w-64">
                                         <SelectValue placeholder="Filter by job" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="">All Jobs</SelectItem>
+                                        <SelectItem value="all">All Jobs</SelectItem>
                                         {jobs.map((job) => (
                                             <SelectItem key={job.id} value={job.id}>
                                                 {job.title}

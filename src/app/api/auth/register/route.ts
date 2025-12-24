@@ -3,7 +3,7 @@ import { createAdminClient } from "@/lib/supabase"
 
 export async function POST(request: NextRequest) {
     try {
-        const { email, password, role, phone, company_name, company_email, description } = await request.json()
+        const { email, password, role, first_name, last_name, phone, company_name, description } = await request.json()
 
         // Validate required fields
         if (!email || !password) {
@@ -27,10 +27,18 @@ export async function POST(request: NextRequest) {
             )
         }
 
-        // Recruiter-specific validation
-        if (role === "RECRUITER" && (!company_name || !company_email)) {
+        // Validate first and last name
+        if (!first_name || !last_name) {
             return NextResponse.json(
-                { error: "Company name and email required for recruiters" },
+                { error: "First name and last name are required" },
+                { status: 400 }
+            )
+        }
+
+        // Recruiter-specific validation
+        if (role === "RECRUITER" && !company_name) {
+            return NextResponse.json(
+                { error: "Company name is required for recruiters" },
                 { status: 400 }
             )
         }
@@ -59,9 +67,10 @@ export async function POST(request: NextRequest) {
             email_confirm: true,
             user_metadata: {
                 role,
+                first_name: first_name || null,
+                last_name: last_name || null,
                 phone: phone || null,
                 company_name: company_name || null,
-                company_email: company_email || null,
                 description: description || null,
             }
         })

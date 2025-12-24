@@ -55,6 +55,8 @@ interface UserProfile {
     role: string
     created_at: string
     profile: {
+        first_name: string | null
+        last_name: string | null
         phone: string | null
         photo_url: string | null
         resume_url: string | null
@@ -594,7 +596,7 @@ export default function CandidateDashboard() {
                             <Avatar className="h-7 w-7 flex-shrink-0">
                                 <AvatarImage src={user?.profile?.photo_url || ""} />
                                 <AvatarFallback className="bg-gradient-to-br from-emerald-500 to-teal-600 text-white text-xs">
-                                    {user?.email?.[0]?.toUpperCase()}
+                                    {user?.profile?.first_name?.[0]?.toUpperCase() || user?.email?.[0]?.toUpperCase()}
                                 </AvatarFallback>
                             </Avatar>
                             <motion.div
@@ -605,7 +607,9 @@ export default function CandidateDashboard() {
                                 className="overflow-hidden"
                             >
                                 <p className="text-sm font-medium text-neutral-700 dark:text-neutral-200 truncate max-w-[150px]">
-                                    {user?.email}
+                                    {user?.profile?.first_name && user?.profile?.last_name
+                                        ? `${user.profile.first_name} ${user.profile.last_name}`
+                                        : user?.email}
                                 </p>
                                 <p className="text-xs text-neutral-500">Candidate</p>
                             </motion.div>

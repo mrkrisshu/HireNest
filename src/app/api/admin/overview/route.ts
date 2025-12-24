@@ -1,32 +1,19 @@
 import { NextResponse } from "next/server"
-import { createSupabaseServer, createAdminClient } from "@/lib/supabase"
+import { createAdminClient } from "@/lib/supabase"
+import { verifyAdminAccess } from "@/lib/admin-auth"
 
 export async function GET() {
     try {
-        const supabase = await createSupabaseServer()
+        const { isValid } = await verifyAdminAccess()
 
-        const { data: { user }, error: authError } = await supabase.auth.getUser()
-
-        if (authError || !user) {
+        if (!isValid) {
             return NextResponse.json(
-                { error: "Unauthorized" },
+                { error: "Unauthorized - Admin access required" },
                 { status: 401 }
             )
         }
 
-        // Check if user is an admin
-        const { data: userData } = await supabase
-            .from('users')
-            .select('role')
-            .eq('id', user.id)
-            .single()
 
-        if (!userData || userData.role !== 'ADMIN') {
-            return NextResponse.json(
-                { error: "Only admins can access this" },
-                { status: 403 }
-            )
-        }
 
         // Use admin client for full access
         const adminClient = createAdminClient()

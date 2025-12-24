@@ -1,8 +1,15 @@
 "use client"
 
 import * as React from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
-import { motion } from "framer-motion"
+import { motion, AnimatePresence } from "framer-motion"
+import { useRouter } from "next/navigation"
+import { useTheme } from "next-themes"
+import {
+    Sidebar,
+    SidebarBody,
+} from "@/components/ui/sidebar"
 import {
     Briefcase,
     Users,
@@ -17,7 +24,10 @@ import {
     Mail,
     Phone,
     Download,
-    Building2
+    Building2,
+    LogOut,
+    Sun,
+    Moon
 } from "lucide-react"
 import { toast } from "sonner"
 
@@ -25,9 +35,8 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Skeleton } from "@/components/ui/skeleton"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Navbar } from "@/components/navbar"
+import { cn } from "@/lib/utils"
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -53,12 +62,15 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 interface UserProfile {
     id: string
     email: string
     role: string
     profile: {
+        first_name: string | null
+        last_name: string | null
         company_name: string
         company_email: string
         description: string | null
@@ -82,7 +94,7 @@ interface Application {
     id: string
     status: string
     applied_at: string
-    resume_url: string
+    resume_url: string | null
     cover_letter: string | null
     job: {
         id: string
@@ -92,6 +104,8 @@ interface Application {
     candidate: {
         id: string
         email: string
+        first_name: string | null
+        last_name: string | null
         phone: string | null
         photo_url: string | null
     }
@@ -105,6 +119,11 @@ interface Stats {
 }
 
 export default function RecruiterDashboard() {
+    const router = useRouter()
+    const { theme, setTheme, resolvedTheme } = useTheme()
+    const [mounted, setMounted] = useState(false)
+    const [sidebarOpen, setSidebarOpen] = useState(false)
+    const [activeTab, setActiveTab] = useState<"jobs" | "applications">("jobs")
     const [user, setUser] = React.useState<UserProfile | null>(null)
     const [jobs, setJobs] = React.useState<Job[]>([])
     const [applications, setApplications] = React.useState<Application[]>([])
@@ -123,6 +142,12 @@ export default function RecruiterDashboard() {
         skills: "",
     })
 
+    // For theme toggle
+    useEffect(() => {
+        setMounted(true)
+    }, [])
+
+    const isDark = resolvedTheme === 'dark'
     const fetchData = React.useCallback(async () => {
         try {
             const [userRes, jobsRes, appsRes] = await Promise.all([
@@ -281,39 +306,229 @@ export default function RecruiterDashboard() {
         })
     }
 
+    const handleLogout = async () => {
+        try {
+            await fetch('/api/auth/logout', { method: 'POST' })
+            router.push('/login')
+        } catch {
+            toast.error('Failed to logout')
+        }
+    }
+
     const filteredApplications = selectedJob
         ? applications.filter((app) => app.job.id === selectedJob)
         : applications
 
     if (isLoading) {
         return (
-            <div className="min-h-screen bg-background">
-                <Navbar />
-                <div className="container px-4 py-8">
-                    <Skeleton className="h-8 w-48 mb-6" />
-                    <div className="grid gap-6 md:grid-cols-4 mb-8">
-                        {[...Array(4)].map((_, i) => (
-                            <Skeleton key={i} className="h-24" />
-                        ))}
-                    </div>
-                    <Skeleton className="h-96" />
+            <div className="flex flex-col md:flex-row h-screen bg-gray-50 dark:bg-neutral-900 overflow-hidden">
+                <div className="flex-1 flex items-center justify-center">
+                    <Loader2 className="h-8 w-8 animate-spin text-emerald-500" />
                 </div>
             </div>
         )
     }
 
     return (
-        <div className="min-h-screen bg-background">
-            <Navbar />
+        <div className="flex flex-col md:flex-row h-screen bg-gray-50 dark:bg-neutral-900 overflow-hidden">
+            <Sidebar open={sidebarOpen} setOpen={setSidebarOpen}>
+                <SidebarBody className="justify-between gap-10 border-r border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900">
+                    <div className="flex flex-col flex-1 overflow-y-auto overflow-x-hidden">
+                        {/* Logo */}
+                        <Link href="/dashboard/recruiter" className="flex items-center gap-2 py-1 relative z-20">
+                            <div className="h-8 w-8 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                                <Briefcase className="h-4 w-4 text-white" />
+                            </div>
+                            <motion.span
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: sidebarOpen ? 1 : 0 }}
+                                className="font-bold text-lg bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent whitespace-pre"
+                            >
+                                HireNest
+                            </motion.span>
+                        </Link>
 
-            <div className="container px-4 py-8">
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                >
+                        {/* Navigation */}
+                        <div className="mt-8 flex flex-col gap-1">
+                            <button
+                                onClick={() => setActiveTab("jobs")}
+                                className={cn(
+                                    "flex items-center gap-2 py-2.5 px-2 rounded-lg transition-colors",
+                                    activeTab === "jobs"
+                                        ? "bg-emerald-500/10"
+                                        : "hover:bg-neutral-100 dark:hover:bg-neutral-800"
+                                )}
+                            >
+                                <Briefcase className={cn(
+                                    "h-5 w-5 flex-shrink-0",
+                                    activeTab === "jobs" ? "text-emerald-500" : "text-neutral-700 dark:text-neutral-200"
+                                )} />
+                                <motion.span
+                                    animate={{
+                                        display: sidebarOpen ? "inline-block" : "none",
+                                        opacity: sidebarOpen ? 1 : 0,
+                                    }}
+                                    className={cn(
+                                        "text-sm whitespace-pre",
+                                        activeTab === "jobs" ? "text-emerald-600 dark:text-emerald-400 font-medium" : "text-neutral-700 dark:text-neutral-200"
+                                    )}
+                                >
+                                    Posted Jobs
+                                </motion.span>
+                                {stats && stats.total_jobs > 0 && (
+                                    <motion.span
+                                        animate={{ opacity: sidebarOpen ? 1 : 0 }}
+                                        className="ml-auto bg-emerald-100 text-emerald-600 text-xs font-medium px-2 py-0.5 rounded-full"
+                                    >
+                                        {stats.total_jobs}
+                                    </motion.span>
+                                )}
+                            </button>
+
+                            <button
+                                onClick={() => setActiveTab("applications")}
+                                className={cn(
+                                    "flex items-center gap-2 py-2.5 px-2 rounded-lg transition-colors",
+                                    activeTab === "applications"
+                                        ? "bg-emerald-500/10"
+                                        : "hover:bg-neutral-100 dark:hover:bg-neutral-800"
+                                )}
+                            >
+                                <Users className={cn(
+                                    "h-5 w-5 flex-shrink-0",
+                                    activeTab === "applications" ? "text-emerald-500" : "text-neutral-700 dark:text-neutral-200"
+                                )} />
+                                <motion.span
+                                    animate={{
+                                        display: sidebarOpen ? "inline-block" : "none",
+                                        opacity: sidebarOpen ? 1 : 0,
+                                    }}
+                                    className={cn(
+                                        "text-sm whitespace-pre",
+                                        activeTab === "applications" ? "text-emerald-600 dark:text-emerald-400 font-medium" : "text-neutral-700 dark:text-neutral-200"
+                                    )}
+                                >
+                                    Applications
+                                </motion.span>
+                                {stats && stats.total_applications > 0 && (
+                                    <motion.span
+                                        animate={{ opacity: sidebarOpen ? 1 : 0 }}
+                                        className="ml-auto bg-blue-100 text-blue-600 text-xs font-medium px-2 py-0.5 rounded-full"
+                                    >
+                                        {stats.total_applications}
+                                    </motion.span>
+                                )}
+                            </button>
+
+                            <button
+                                onClick={() => setDialogOpen(true)}
+                                className="flex items-center gap-2 py-2.5 px-2 rounded-lg transition-colors hover:bg-emerald-500/10 mt-2"
+                            >
+                                <Plus className="h-5 w-5 flex-shrink-0 text-emerald-500" />
+                                <motion.span
+                                    animate={{
+                                        display: sidebarOpen ? "inline-block" : "none",
+                                        opacity: sidebarOpen ? 1 : 0,
+                                    }}
+                                    className="text-sm whitespace-pre text-emerald-600 dark:text-emerald-400 font-medium"
+                                >
+                                    Post New Job
+                                </motion.span>
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Bottom section */}
+                    <div className="flex flex-col gap-1">
+                        <button
+                            onClick={() => setTheme(isDark ? 'light' : 'dark')}
+                            className="flex items-center gap-2 py-2 px-2 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
+                        >
+                            <div className="relative h-5 w-5 flex items-center justify-center flex-shrink-0">
+                                <AnimatePresence mode="wait">
+                                    {mounted && isDark ? (
+                                        <motion.div
+                                            key="moon"
+                                            initial={{ scale: 0, opacity: 0, rotate: -90 }}
+                                            animate={{ scale: 1, opacity: 1, rotate: 0 }}
+                                            exit={{ scale: 0, opacity: 0, rotate: 90 }}
+                                            transition={{ duration: 0.4, ease: "easeInOut" }}
+                                            className="absolute inset-0"
+                                        >
+                                            <Moon className="h-5 w-5 text-amber-400" />
+                                        </motion.div>
+                                    ) : (
+                                        <motion.div
+                                            key="sun"
+                                            initial={{ scale: 0, opacity: 0, rotate: 90 }}
+                                            animate={{ scale: 1, opacity: 1, rotate: 0 }}
+                                            exit={{ scale: 0, opacity: 0, rotate: -90 }}
+                                            transition={{ duration: 0.4, ease: "easeInOut" }}
+                                            className="absolute inset-0"
+                                        >
+                                            <Sun className="h-5 w-5 text-amber-500" />
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
+                            </div>
+                            <motion.span
+                                animate={{
+                                    display: sidebarOpen ? "inline-block" : "none",
+                                    opacity: sidebarOpen ? 1 : 0,
+                                }}
+                                className="text-sm text-neutral-700 dark:text-neutral-200 whitespace-pre transition-colors duration-500"
+                            >
+                                {isDark ? 'Light Mode' : 'Dark Mode'}
+                            </motion.span>
+                        </button>
+
+                        <button
+                            onClick={handleLogout}
+                            className="flex items-center gap-2 py-2 px-2 rounded-lg hover:bg-red-500/10 transition-colors group"
+                        >
+                            <LogOut className="h-5 w-5 flex-shrink-0 text-neutral-700 dark:text-neutral-200 group-hover:text-red-500" />
+                            <motion.span
+                                animate={{
+                                    display: sidebarOpen ? "inline-block" : "none",
+                                    opacity: sidebarOpen ? 1 : 0,
+                                }}
+                                className="text-sm text-neutral-700 dark:text-neutral-200 group-hover:text-red-500 whitespace-pre"
+                            >
+                                Logout
+                            </motion.span>
+                        </button>
+                        <div className="flex items-center gap-2 py-2 px-1">
+                            <Avatar className="h-7 w-7 flex-shrink-0">
+                                <AvatarImage src="" />
+                                <AvatarFallback className="bg-gradient-to-br from-emerald-500 to-teal-600 text-white text-xs">
+                                    {user?.profile?.first_name?.[0]?.toUpperCase() || user?.email?.[0]?.toUpperCase()}
+                                </AvatarFallback>
+                            </Avatar>
+                            <motion.div
+                                animate={{
+                                    display: sidebarOpen ? "block" : "none",
+                                    opacity: sidebarOpen ? 1 : 0,
+                                }}
+                                className="overflow-hidden"
+                            >
+                                <p className="text-sm font-medium text-neutral-700 dark:text-neutral-200 truncate max-w-[150px]">
+                                    {user?.profile?.first_name && user?.profile?.last_name
+                                        ? `${user.profile.first_name} ${user.profile.last_name}`
+                                        : user?.email}
+                                </p>
+                                <p className="text-xs text-neutral-500">Recruiter</p>
+                            </motion.div>
+                        </div>
+                    </div>
+                </SidebarBody>
+            </Sidebar>
+
+            {/* Main Content */}
+            <main className="flex-1 overflow-auto">
+                <div className="p-6 md:p-10">
                     <div className="flex items-center justify-between mb-8">
                         <div>
-                            <h1 className="text-3xl font-bold">Recruiter Dashboard</h1>
+                            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Recruiter Dashboard</h1>
                             <p className="text-muted-foreground mt-1">
                                 {user?.profile?.company_name} • Manage jobs and review applications
                             </p>
@@ -487,9 +702,9 @@ export default function RecruiterDashboard() {
                         </Card>
                     </div>
 
-                    {/* Tabs */}
-                    <Tabs defaultValue="jobs" className="space-y-6">
-                        <TabsList>
+                    {/* Content based on activeTab */}
+                    <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as "jobs" | "applications")} className="space-y-6">
+                        <TabsList className="hidden">
                             <TabsTrigger value="jobs">Posted Jobs</TabsTrigger>
                             <TabsTrigger value="applications">Applications</TabsTrigger>
                         </TabsList>
@@ -515,9 +730,9 @@ export default function RecruiterDashboard() {
                                                 <div className="flex items-start justify-between">
                                                     <div className="flex-1">
                                                         <div className="flex items-center gap-2">
-                                                            <Link href={`/jobs/${job.id}`} className="font-semibold text-lg hover:text-emerald-600 transition-colors">
+                                                            <span className="font-semibold text-lg">
                                                                 {job.title}
-                                                            </Link>
+                                                            </span>
                                                             <Badge variant={job.status === "OPEN" ? "default" : "secondary"}>
                                                                 {job.status}
                                                             </Badge>
@@ -539,9 +754,6 @@ export default function RecruiterDashboard() {
                                                                 </Button>
                                                             </DropdownMenuTrigger>
                                                             <DropdownMenuContent align="end">
-                                                                <DropdownMenuItem asChild>
-                                                                    <Link href={`/jobs/${job.id}`}>View Job</Link>
-                                                                </DropdownMenuItem>
                                                                 {job.status === "OPEN" && (
                                                                     <DropdownMenuItem onClick={() => handleCloseJob(job.id)} className="text-red-600">
                                                                         Close Position
@@ -613,13 +825,17 @@ export default function RecruiterDashboard() {
                                                     <Avatar className="h-12 w-12">
                                                         <AvatarImage src={app.candidate.photo_url || ""} />
                                                         <AvatarFallback className="bg-gradient-to-br from-emerald-500 to-teal-600 text-white">
-                                                            {app.candidate.email[0].toUpperCase()}
+                                                            {app.candidate.first_name?.[0]?.toUpperCase() || app.candidate.email[0].toUpperCase()}
                                                         </AvatarFallback>
                                                     </Avatar>
                                                     <div className="flex-1">
                                                         <div className="flex items-start justify-between">
                                                             <div>
-                                                                <p className="font-semibold">{app.candidate.email}</p>
+                                                                <p className="font-semibold">
+                                                                    {app.candidate.first_name && app.candidate.last_name
+                                                                        ? `${app.candidate.first_name} ${app.candidate.last_name}`
+                                                                        : app.candidate.email}
+                                                                </p>
                                                                 <p className="text-sm text-muted-foreground">Applied for: {app.job.title}</p>
                                                                 <div className="flex items-center gap-4 mt-2 text-sm text-muted-foreground">
                                                                     {app.candidate.phone && (
@@ -651,16 +867,18 @@ export default function RecruiterDashboard() {
                                                             </div>
                                                         )}
                                                         <div className="flex items-center gap-2 mt-4">
-                                                            <a
-                                                                href={app.resume_url}
-                                                                target="_blank"
-                                                                rel="noopener noreferrer"
-                                                            >
-                                                                <Button variant="outline" size="sm">
-                                                                    <Download className="mr-2 h-4 w-4" />
-                                                                    View Resume
-                                                                </Button>
-                                                            </a>
+                                                            {app.resume_url && (
+                                                                <a
+                                                                    href={app.resume_url}
+                                                                    target="_blank"
+                                                                    rel="noopener noreferrer"
+                                                                >
+                                                                    <Button variant="outline" size="sm">
+                                                                        <Download className="mr-2 h-4 w-4" />
+                                                                        View Resume
+                                                                    </Button>
+                                                                </a>
+                                                            )}
                                                             {app.status === "PENDING" && (
                                                                 <Button
                                                                     variant="outline"
@@ -701,8 +919,8 @@ export default function RecruiterDashboard() {
                             )}
                         </TabsContent>
                     </Tabs>
-                </motion.div>
-            </div>
+                </div>
+            </main>
         </div>
     )
 }

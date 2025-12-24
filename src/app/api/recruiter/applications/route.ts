@@ -52,7 +52,7 @@ export async function GET(request: NextRequest) {
         job:jobs(id, title, location),
         candidate:users!applications_candidate_id_fkey(
           id, email,
-          candidate_profiles(phone, photo_url)
+          candidate_profiles(first_name, last_name, phone, photo_url)
         )
       `)
             .in('job_id', jobIds)
@@ -74,20 +74,29 @@ export async function GET(request: NextRequest) {
             )
         }
 
-        const formattedApplications = applications?.map(app => ({
-            id: app.id,
-            status: app.status,
-            applied_at: app.applied_at,
-            resume_url: app.resume_url,
-            cover_letter: app.cover_letter,
-            job: app.job,
-            candidate: {
-                id: app.candidate?.id,
-                email: app.candidate?.email,
-                phone: app.candidate?.candidate_profiles?.phone,
-                photo_url: app.candidate?.candidate_profiles?.photo_url
-            }
-        }))
+        const formattedApplications = applications?.map(app => {
+            // candidate_profiles comes as an array from Supabase
+            const candidateProfile = Array.isArray(app.candidate?.candidate_profiles)
+                ? app.candidate?.candidate_profiles[0]
+                : app.candidate?.candidate_profiles;
+
+            return {
+                id: app.id,
+                status: app.status,
+                applied_at: app.applied_at,
+                resume_url: app.resume_url || candidateProfile?.resume_url || null,
+                cover_letter: app.cover_letter,
+                job: app.job,
+                candidate: {
+                    id: app.candidate?.id,
+                    email: app.candidate?.email || 'Unknown',
+                    first_name: candidateProfile?.first_name || null,
+                    last_name: candidateProfile?.last_name || null,
+                    phone: candidateProfile?.phone || null,
+                    photo_url: candidateProfile?.photo_url || null
+                }
+            };
+        })
 
         return NextResponse.json({ applications: formattedApplications })
     } catch (error) {

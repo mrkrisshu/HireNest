@@ -22,15 +22,18 @@ function RegisterForm() {
     const [activeTab, setActiveTab] = useState(defaultRole)
 
     // Candidate form
+    const [candidateFirstName, setCandidateFirstName] = useState("")
+    const [candidateLastName, setCandidateLastName] = useState("")
     const [candidateEmail, setCandidateEmail] = useState("")
     const [candidatePassword, setCandidatePassword] = useState("")
     const [candidatePhone, setCandidatePhone] = useState("")
 
     // Recruiter form
+    const [recruiterFirstName, setRecruiterFirstName] = useState("")
+    const [recruiterLastName, setRecruiterLastName] = useState("")
     const [recruiterEmail, setRecruiterEmail] = useState("")
     const [recruiterPassword, setRecruiterPassword] = useState("")
     const [companyName, setCompanyName] = useState("")
-    const [companyEmail, setCompanyEmail] = useState("")
 
     // Job-related images from Unsplash
     const images = [
@@ -76,6 +79,8 @@ function RegisterForm() {
                     email: candidateEmail,
                     password: candidatePassword,
                     role: "CANDIDATE",
+                    first_name: candidateFirstName,
+                    last_name: candidateLastName,
                     phone: candidatePhone,
                 }),
             })
@@ -108,8 +113,9 @@ function RegisterForm() {
                     email: recruiterEmail,
                     password: recruiterPassword,
                     role: "RECRUITER",
+                    first_name: recruiterFirstName,
+                    last_name: recruiterLastName,
                     company_name: companyName,
-                    company_email: companyEmail,
                 }),
             })
 
@@ -185,6 +191,30 @@ function RegisterForm() {
 
                                 <TabsContent value="candidate">
                                     <form onSubmit={handleCandidateSubmit} className="space-y-4">
+                                        <div className="grid grid-cols-2 gap-3">
+                                            <div className="space-y-1.5">
+                                                <Label htmlFor="candidate-first-name">First Name</Label>
+                                                <Input
+                                                    id="candidate-first-name"
+                                                    placeholder="John"
+                                                    value={candidateFirstName}
+                                                    onChange={(e) => setCandidateFirstName(e.target.value)}
+                                                    required
+                                                    disabled={loading}
+                                                />
+                                            </div>
+                                            <div className="space-y-1.5">
+                                                <Label htmlFor="candidate-last-name">Last Name</Label>
+                                                <Input
+                                                    id="candidate-last-name"
+                                                    placeholder="Doe"
+                                                    value={candidateLastName}
+                                                    onChange={(e) => setCandidateLastName(e.target.value)}
+                                                    required
+                                                    disabled={loading}
+                                                />
+                                            </div>
+                                        </div>
                                         <div className="space-y-1.5">
                                             <Label htmlFor="candidate-email">Email</Label>
                                             <Input
@@ -235,6 +265,30 @@ function RegisterForm() {
 
                                 <TabsContent value="recruiter">
                                     <form onSubmit={handleRecruiterSubmit} className="space-y-4">
+                                        <div className="grid grid-cols-2 gap-3">
+                                            <div className="space-y-1.5">
+                                                <Label htmlFor="recruiter-first-name">First Name</Label>
+                                                <Input
+                                                    id="recruiter-first-name"
+                                                    placeholder="John"
+                                                    value={recruiterFirstName}
+                                                    onChange={(e) => setRecruiterFirstName(e.target.value)}
+                                                    required
+                                                    disabled={loading}
+                                                />
+                                            </div>
+                                            <div className="space-y-1.5">
+                                                <Label htmlFor="recruiter-last-name">Last Name</Label>
+                                                <Input
+                                                    id="recruiter-last-name"
+                                                    placeholder="Doe"
+                                                    value={recruiterLastName}
+                                                    onChange={(e) => setRecruiterLastName(e.target.value)}
+                                                    required
+                                                    disabled={loading}
+                                                />
+                                            </div>
+                                        </div>
                                         <div className="space-y-1.5">
                                             <Label htmlFor="recruiter-email">Email</Label>
                                             <Input
@@ -266,18 +320,6 @@ function RegisterForm() {
                                                 placeholder="Your Company"
                                                 value={companyName}
                                                 onChange={(e) => setCompanyName(e.target.value)}
-                                                required
-                                                disabled={loading}
-                                            />
-                                        </div>
-                                        <div className="space-y-1.5">
-                                            <Label htmlFor="company-email">Company Email</Label>
-                                            <Input
-                                                id="company-email"
-                                                type="email"
-                                                placeholder="hr@company.com"
-                                                value={companyEmail}
-                                                onChange={(e) => setCompanyEmail(e.target.value)}
                                                 required
                                                 disabled={loading}
                                             />

@@ -109,7 +109,7 @@ export function Navbar() {
         >
             <div className="container flex h-16 items-center justify-between px-4 md:px-6">
                 {/* Logo */}
-                <Link href="/" className="flex items-center space-x-2">
+                <Link href={user ? getDashboardLink() : "/"} className="flex items-center space-x-2">
                     <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600">
                         <Briefcase className="h-5 w-5 text-white" />
                     </div>

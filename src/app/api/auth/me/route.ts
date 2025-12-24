@@ -28,15 +28,25 @@ export async function GET() {
             )
         }
 
+        // Handle profile data - may come as array from Supabase
+        let profile = null
+        if (userData.role === 'CANDIDATE') {
+            profile = Array.isArray(userData.candidate_profiles)
+                ? userData.candidate_profiles[0]
+                : userData.candidate_profiles
+        } else if (userData.role === 'RECRUITER') {
+            profile = Array.isArray(userData.recruiter_profiles)
+                ? userData.recruiter_profiles[0]
+                : userData.recruiter_profiles
+        }
+
         return NextResponse.json({
             user: {
                 id: userData.id,
                 email: userData.email,
                 role: userData.role,
                 created_at: userData.created_at,
-                profile: userData.role === 'CANDIDATE'
-                    ? userData.candidate_profiles
-                    : userData.recruiter_profiles
+                profile: profile
             }
         })
     } catch (error) {

@@ -9,7 +9,13 @@
 
 <br>
 
-HireNest is a **production-ready, full-stack job portal** connecting candidates and recruiters through secure, resume-based hiring workflows. Built with modern technologies and industry-standard practices, it features role-based authentication, admin oversight, and a beautiful responsive UI.
+HireNest is a **production-ready, full-stack job portal** connecting candidates and recruiters through secure, resume-based hiring workflows. Built with modern technologies and industry-standard practices.
+
+## 🎬 Demo
+
+[![HireNest Demo](https://img.youtube.com/vi/nGb-3wfR_QQ/maxresdefault.jpg)](https://www.youtube.com/watch?v=nGb-3wfR_QQ)
+
+**[▶️ Watch Full Demo](https://www.youtube.com/watch?v=nGb-3wfR_QQ)**
 
 ---
 

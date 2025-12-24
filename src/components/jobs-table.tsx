@@ -123,8 +123,8 @@ export function JobsTable({
                     initial="hidden"
                     animate="visible"
                 >
-                    {/* Headers */}
-                    <div className="grid grid-cols-12 gap-4 px-4 py-2 text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                    {/* Headers - Hidden on Mobile */}
+                    <div className="hidden md:grid grid-cols-12 gap-4 px-4 py-2 text-xs font-medium text-muted-foreground uppercase tracking-wider">
                         <div className="col-span-1">No</div>
                         <div className="col-span-3">Position</div>
                         <div className="col-span-2">Company</div>
@@ -183,8 +183,44 @@ export function JobsTable({
                                         }}
                                     />
 
-                                    {/* Grid Content */}
-                                    <div className="relative grid grid-cols-12 gap-4 items-center">
+                                    {/* Mobile Layout */}
+                                    <div className="md:hidden relative space-y-3">
+                                        <div className="flex items-start justify-between">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center">
+                                                    <Briefcase className="w-5 h-5 text-white" />
+                                                </div>
+                                                <div>
+                                                    <span className="text-foreground font-medium block">
+                                                        {job.title}
+                                                    </span>
+                                                    <span className="text-sm text-muted-foreground flex items-center gap-1">
+                                                        <Building2 className="w-3 h-3" />
+                                                        {job.company}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            {getJobTypeBadge(job.job_type)}
+                                        </div>
+                                        <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                                            <span className="flex items-center gap-1">
+                                                <MapPin className="w-3 h-3" />
+                                                {job.location}
+                                            </span>
+                                            <span className="flex items-center gap-1">
+                                                <Clock className="w-3 h-3" />
+                                                {formatRelativeTime(job.created_at)}
+                                            </span>
+                                        </div>
+                                        {job.skills.length > 0 && (
+                                            <div className="text-xs text-muted-foreground">
+                                                {job.skills.slice(0, 3).join(", ")}
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* Desktop Grid Content */}
+                                    <div className="relative hidden md:grid grid-cols-12 gap-4 items-center">
                                         {/* Number */}
                                         <div className="col-span-1">
                                             <span className="text-2xl font-bold text-muted-foreground">

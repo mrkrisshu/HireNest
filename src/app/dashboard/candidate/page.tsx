@@ -467,7 +467,10 @@ export default function CandidateDashboard() {
                         {/* Navigation */}
                         <div className="mt-8 flex flex-col gap-1">
                             <button
-                                onClick={() => setActiveTab("applications")}
+                                onClick={() => {
+                                    setActiveTab("applications")
+                                    setSidebarOpen(false)
+                                }}
                                 className={cn(
                                     "flex items-center gap-2 py-2.5 px-2 rounded-lg transition-colors",
                                     activeTab === "applications"
@@ -499,7 +502,10 @@ export default function CandidateDashboard() {
                             </button>
 
                             <button
-                                onClick={() => setActiveTab("jobs")}
+                                onClick={() => {
+                                    setActiveTab("jobs")
+                                    setSidebarOpen(false)
+                                }}
                                 className={cn(
                                     "flex items-center gap-2 py-2.5 px-2 rounded-lg transition-colors",
                                     activeTab === "jobs"
@@ -526,7 +532,10 @@ export default function CandidateDashboard() {
                             </button>
 
                             <button
-                                onClick={() => setActiveTab("notifications")}
+                                onClick={() => {
+                                    setActiveTab("notifications")
+                                    setSidebarOpen(false)
+                                }}
                                 className={cn(
                                     "flex items-center gap-2 py-2.5 px-2 rounded-lg transition-colors relative",
                                     activeTab === "notifications"

@@ -697,7 +697,7 @@ export default function RecruiterDashboard() {
                     </div>
 
                     {/* Stats Cards */}
-                    <div className="grid gap-4 md:grid-cols-4 mb-8">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
                         <Card>
                             <CardContent className="pt-6">
                                 <div className="flex items-center justify-between">
@@ -777,9 +777,9 @@ export default function RecruiterDashboard() {
                                     {jobs.map((job) => (
                                         <Card key={job.id} className="hover:shadow-md transition-shadow">
                                             <CardContent className="p-6">
-                                                <div className="flex items-start justify-between">
-                                                    <div className="flex-1">
-                                                        <div className="flex items-center gap-2">
+                                                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+                                                    <div className="flex-1 min-w-0">
+                                                        <div className="flex flex-wrap items-center gap-2">
                                                             <span className="font-semibold text-lg">
                                                                 {job.title}
                                                             </span>
@@ -792,8 +792,8 @@ export default function RecruiterDashboard() {
                                                             Posted {formatDate(job.created_at)}
                                                         </p>
                                                     </div>
-                                                    <div className="flex items-center gap-4">
-                                                        <div className="text-right">
+                                                    <div className="flex items-center justify-between sm:justify-end gap-4">
+                                                        <div className="text-left sm:text-right">
                                                             <p className="font-semibold">{job.total_applications}</p>
                                                             <p className="text-sm text-muted-foreground">Applications</p>
                                                         </div>
@@ -813,7 +813,7 @@ export default function RecruiterDashboard() {
                                                         </DropdownMenu>
                                                     </div>
                                                 </div>
-                                                <div className="flex gap-4 mt-4 text-sm">
+                                                <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-3 sm:gap-4 mt-4 text-sm">
                                                     <span className="flex items-center gap-1">
                                                         <Clock className="h-4 w-4 text-yellow-500" />
                                                         {job.pending} Pending
@@ -839,9 +839,9 @@ export default function RecruiterDashboard() {
                         </TabsContent>
 
                         <TabsContent value="applications" className="space-y-4">
-                            <div className="flex items-center gap-4 mb-4">
+                            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4 mb-4">
                                 <Select value={selectedJob || "all"} onValueChange={(v) => setSelectedJob(v === "all" ? "" : v)}>
-                                    <SelectTrigger className="w-64">
+                                    <SelectTrigger className="w-full sm:w-64">
                                         <SelectValue placeholder="Filter by job" />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -871,39 +871,39 @@ export default function RecruiterDashboard() {
                                     {filteredApplications.map((app) => (
                                         <Card key={app.id} className="hover:shadow-md transition-shadow">
                                             <CardContent className="p-6">
-                                                <div className="flex items-start gap-4">
-                                                    <Avatar className="h-12 w-12">
+                                                <div className="flex flex-col sm:flex-row items-start gap-3 sm:gap-4">
+                                                    <Avatar className="h-12 w-12 flex-shrink-0">
                                                         <AvatarImage src={app.candidate.photo_url || ""} />
                                                         <AvatarFallback className="bg-gradient-to-br from-emerald-500 to-teal-600 text-white">
                                                             {app.candidate.first_name?.[0]?.toUpperCase() || app.candidate.email[0].toUpperCase()}
                                                         </AvatarFallback>
                                                     </Avatar>
-                                                    <div className="flex-1">
-                                                        <div className="flex items-start justify-between">
-                                                            <div>
-                                                                <p className="font-semibold">
+                                                    <div className="flex-1 min-w-0 w-full">
+                                                        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2">
+                                                            <div className="min-w-0">
+                                                                <p className="font-semibold truncate">
                                                                     {app.candidate.first_name && app.candidate.last_name
                                                                         ? `${app.candidate.first_name} ${app.candidate.last_name}`
                                                                         : app.candidate.email}
                                                                 </p>
                                                                 <p className="text-sm text-muted-foreground">Applied for: {app.job.title}</p>
-                                                                <div className="flex items-center gap-4 mt-2 text-sm text-muted-foreground">
+                                                                <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-2 text-sm text-muted-foreground">
                                                                     {app.candidate.phone && (
                                                                         <span className="flex items-center gap-1">
                                                                             <Phone className="h-3 w-3" />
                                                                             {app.candidate.phone}
                                                                         </span>
                                                                     )}
-                                                                    <span className="flex items-center gap-1">
-                                                                        <Mail className="h-3 w-3" />
-                                                                        {app.candidate.email}
+                                                                    <span className="flex items-center gap-1 truncate">
+                                                                        <Mail className="h-3 w-3 flex-shrink-0" />
+                                                                        <span className="truncate">{app.candidate.email}</span>
                                                                     </span>
                                                                 </div>
                                                                 <p className="text-sm text-muted-foreground mt-1">
                                                                     Applied {formatDate(app.applied_at)}
                                                                 </p>
                                                             </div>
-                                                            <Badge className={getStatusColor(app.status)}>
+                                                            <Badge className={cn(getStatusColor(app.status), "flex-shrink-0 self-start")}>
                                                                 <span className="flex items-center gap-1">
                                                                     {getStatusIcon(app.status)}
                                                                     {app.status}
@@ -916,7 +916,7 @@ export default function RecruiterDashboard() {
                                                                 <p className="text-sm text-muted-foreground">{app.cover_letter}</p>
                                                             </div>
                                                         )}
-                                                        <div className="flex items-center gap-2 mt-4">
+                                                        <div className="flex flex-wrap items-center gap-2 mt-4">
                                                             {app.resume_url && (
                                                                 <a
                                                                     href={app.resume_url}
